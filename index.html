@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JJConverter - Free Online PDF Converter | Like I Love PDF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/337/337946.png">
+    
+    <!-- Ads -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3940256099942544" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --red: #f40f3e;
+            --light-red: #ff3b6c;
+            --dark: #2c3e50;
+            --gray: #ecf0f1;
+            --white: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        
+        /* Header */
+        header {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--red);
+        }
+        
+        .logo i {
+            color: var(--red);
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-menu a:hover {
+            color: var(--red);
+        }
+        
+        .lang-btn {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--red) 0%, var(--light-red) 100%);
+            color: white;
+            text-align: center;
+            padding: 120px 20px 60px;
+            margin-top: 70px;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            opacity: 0.9;
+        }
+        
+        /* Upload Box */
+        .upload-box {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 40px auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 2px dashed #ddd;
+            transition: border-color 0.3s;
+        }
+        
+        .upload-box:hover {
+            border-color: var(--red);
+        }
+        
+        .upload-icon {
+            font-size: 60px;
+            color: var(--red);
+            margin-bottom: 20px;
+        }
+        
+        .upload-btn {
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s;
+        }
+        
+        .upload-btn:hover {
+            background: #d00e36;
+        }
+        
+        .upload-text {
+            margin: 20px 0;
+            color: #666;
+        }
+        
+        /* Tools Grid */
+        .tools-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            color: var(--dark);
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+        
+        .tool-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #eee;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-color: var(--red);
+        }
+        
+        .tool-icon {
+            font-size: 40px;
+            color: var(--red);
+            margin-bottom: 15px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tool-title {
+            font-size: 18px;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .tool-desc {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* I Love PDF Style Icons */
+        .icon-pdf-word:before { content: "📄→📝"; }
+        .icon-pdf-excel:before { content: "📄→📊"; }
+        .icon-pdf-ppt:before { content: "📄→📽️"; }
+        .icon-word-pdf:before { content: "📝→📄"; }
+        .icon-excel-pdf:before { content: "📊→📄"; }
+        .icon-ppt-pdf:before { content: "📽️→📄"; }
+        .icon-pdf-jpg:before { content: "📄→🖼️"; }
+        .icon-jpg-pdf:before { content: "🖼️→📄"; }
+        .icon-merge:before { content: "🔗"; }
+        .icon-split:before { content: "✂️"; }
+        .icon-compress:before { content: "📦"; }
+        .icon-ocr:before { content: "🔍"; }
+        .icon-protect:before { content: "🔒"; }
+        .icon-unlock:before { content: "🔓"; }
+        .icon-rotate:before { content: "↩️"; }
+        .icon-organize:before { content: "📑"; }
+        
+        /* Ad Container */
+        .ad-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px auto;
+            text-align: center;
+            min-height: 90px;
+            border: 1px dashed #ccc;
+        }
+        
+        /* Features */
+        .features {
+            background: #f8f9fa;
+            padding: 60px 20px;
+            margin-top: 60px;
+        }
+        
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .feature i {
+            font-size: 40px;
+            color: var(--red);
+            margin-bottom: 20px;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 20px 30px;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        
+        .footer-section h3 {
+            color: var(--white);
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .footer-section a {
+            color: #bbb;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: var(--white);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid #444;
+            color: #999;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                height: auto;
+                padding: 15px;
+            }
+            
+            .nav-menu {
+                margin: 20px 0;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero {
+                padding: 100px 20px 40px;
+            }
+            
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .tools-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .upload-box {
+                padding: 20px;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-file-pdf"></i>
+                JJConverter
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#"><i class="fas fa-home"></i> HOME</a></li>
+                <li><a href="#tools"><i class="fas fa-tools"></i> ALL TOOLS</a></li>
+                <li><a href="#"><i class="fas fa-star"></i> PREMIUM</a></li>
+                <li><a href="#"><i class="fas fa-info-circle"></i> ABOUT</a></li>
+                <li><a href="#"><i class="fas fa-question-circle"></i> HELP</a></li>
+            </ul>
+            <button class="lang-btn"><i class="fas fa-globe"></i> English</button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Free Online PDF Converter</h1>
+        <p>Convert PDF files to Word, Excel, PowerPoint, JPG, and more. Fast, secure, and 100% free!</p>
+        
+        <!-- Ad Top -->
+        <div class="ad-container" style="max-width: 728px; margin: 30px auto;">
+            <!-- AdSense Ad -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-3940256099942544"
+                 data-ad-slot="1234567890"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        
+        <!-- Upload Box -->
+        <div class="upload-box" id="uploadBox">
+            <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h2>Select PDF file</h2>
+            <p class="upload-text">or drag and drop here</p>
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-folder-open"></i> Choose File
+            </button>
+            <p style="margin-top: 15px; color: #999; font-size: 14px;">Maximum file size 100 MB</p>
+            <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx">
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section class="tools-section" id="tools">
+        <h2 class="section-title">All PDF Tools</h2>
+        
+        <!-- Middle Ad -->
+        <div class="ad-container" style="max-width: 728px;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-3940256099942544"
+                 data-ad-slot="0987654321"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        
+        <div class="tools-grid">
+            <!-- PDF to Office -->
+            <div class="tool-card" onclick="selectTool('pdf-to-word')">
+                <div class="tool-icon">
+                    <i class="fas fa-file-word"></i>
+                </div>
+                <h3 class="tool-title">PDF to WORD</h3>
+                <p class="tool-desc">Convert PDF to editable Word documents</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('pdf-to-word-ocr')">
+                <div class="tool-icon">
+                    <i class="fas fa-file-word"></i><i class="fas fa-search" style="font-size: 20px; margin-left: 5px;"></i>
+                </div>
+                <h3 class="tool-title">PDF to WORD OCR</h3>
+                <p class="tool-desc">Convert scanned PDFs to editable Word with OCR</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('pdf-to-excel')">
+                <div class="tool-icon">
+                    <i class="fas fa-file-excel"></i>
+                </div>
+                <h3 class="tool-title">PDF to EXCEL</h3>
+                <p class="tool-desc">Extract tables from PDF to Excel spreadsheets</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('pdf-to-ppt')">
+                <div class="tool-icon">
+                    <i class="fas fa-file-powerpoint"></i>
+                </div>
+                <h3 class="tool-title">PDF to PowerPoint</h3>
+                <p class="tool-desc">Convert PDF to editable PowerPoint presentations</p>
+            </div>
+            
+            <!-- Office to PDF -->
+            <div class="tool-card" onclick="selectTool('word-to-pdf')">
+                <div class="tool-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <h3 class="tool-title">WORD to PDF</h3>
+                <p class="tool-desc">Convert Word documents to PDF</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('excel-to-pdf')">
+                <div class="tool-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <h3 class="tool-title">EXCEL to PDF</h3>
+                <p class="tool-desc">Convert Excel spreadsheets to PDF</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('ppt-to-pdf')">
+                <div class="tool-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <h3 class="tool-title">PowerPoint to PDF</h3>
+                <p class="tool-desc">Convert PowerPoint presentations to PDF</p>
+            </div>
+            
+            <!-- Image Tools -->
+            <div class="tool-card" onclick="selectTool('pdf-to-jpg')">
+                <div class="tool-icon">
+                    <i class="fas fa-file-image"></i>
+                </div>
+                <h3 class="tool-title">PDF to JPG</h3>
+                <p class="tool-desc">Convert PDF pages to high-quality JPG images</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('jpg-to-pdf')">
+                <div class="tool-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <h3 class="tool-title">JPG to PDF</h3>
+                <p class="tool-desc">Convert JPG images to PDF documents</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('png-to-pdf')">
+                <div class="tool-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <h3 class="tool-title">PNG to PDF</h3>
+                <p class="tool-desc">Convert PNG images to PDF documents</p>
+            </div>
+            
+            <!-- PDF Tools -->
+            <div class="tool-card" onclick="selectTool('merge-pdf')">
+                <div class="tool-icon">
+                    <i class="fas fa-object-group"></i>
+                </div>
+                <h3 class="tool-title">Merge PDF</h3>
+                <p class="tool-desc">Combine multiple PDFs into one document</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('split-pdf')">
+                <div class="tool-icon">
+                    <i class="fas fa-cut"></i>
+                </div>
+                <h3 class="tool-title">Split PDF</h3>
+                <p class="tool-desc">Split PDF into multiple files</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('compress-pdf')">
+                <div class="tool-icon">
+                    <i class="fas fa-compress-alt"></i>
+                </div>
+                <h3 class="tool-title">Compress PDF</h3>
+                <p class="tool-desc">Reduce PDF file size without losing quality</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('organize-pdf')">
+                <div class="tool-icon">
+                    <i class="fas fa-sort-numeric-up"></i>
+                </div>
+                <h3 class="tool-title">Organize PDF</h3>
+                <p class="tool-desc">Reorder, rotate, or delete PDF pages</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('protect-pdf')">
+                <div class="tool-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="tool-title">Protect PDF</h3>
+                <p class="tool-desc">Add password protection to PDF files</p>
+            </div>
+            
+            <div class="tool-card" onclick="selectTool('unlock-pdf')">
+                <div class="tool-icon">
+                    <i class="fas fa-unlock"></i>
+                </div>
+                <h3 class="tool-title">Unlock PDF</h3>
+                <p class="tool-desc">Remove password protection from PDF</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <h2 class="section-title">Why Choose JJConverter?</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Secure & Private</h3>
+                <p>Files are automatically deleted after 1 hour. Your privacy is guaranteed.</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-bolt"></i>
+                <h3>Fast Conversion</h3>
+                <p>Optimized tools for quick PDF processing. No waiting time.</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-globe"></i>
+                <h3>Works Online</h3>
+                <p>No installation needed. Works in any browser on any device.</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-heart"></i>
+                <h3>100% Free</h3>
+                <p>All tools are completely free with no hidden charges.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>JJConverter</h3>
+                <p>Free online PDF tools for all your document needs. No registration required.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Tools</h3>
+                <a href="#">PDF to Word</a>
+                <a href="#">Word to PDF</a>
+                <a href="#">PDF to Excel</a>
+                <a href="#">Excel to PDF</a>
+            </div>
+            <div class="footer-section">
+                <h3>Company</h3>
+                <a href="#">About Us</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <a href="#">Help Center</a>
+                <a href="#">FAQ</a>
+                <a href="#">Report Issue</a>
+                <a href="#">Feedback</a>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© 2024 JJConverter. All rights reserved. This site uses cookies.</p>
+            <p style="margin-top: 10px; font-size: 12px;">JJConverter is not affiliated with Adobe or I Love PDF.</p>
+        </div>
+    </footer>
+
+    <!-- Conversion Modal -->
+    <div id="conversionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; justify-content:center; align-items:center;">
+        <div style="background:white; padding:40px; border-radius:10px; text-align:center; max-width:500px; width:90%;">
+            <h2 style="color:var(--red); margin-bottom:20px;">Convert File</h2>
+            <div id="selectedTool" style="margin-bottom:20px;"></div>
+            <div id="progressBar" style="height:10px; background:#eee; border-radius:5px; margin:20px 0; overflow:hidden;">
+                <div id="progress" style="height:100%; background:var(--red); width:0%; transition:width 0.3s;"></div>
+            </div>
+            <p id="progressText">Starting conversion...</p>
+            <button onclick="downloadFile()" id="downloadBtn" style="display:none; background:var(--red); color:white; border:none; padding:12px 30px; border-radius:5px; margin-top:20px; cursor:pointer;">
+                <i class="fas fa-download"></i> Download File
+            </button>
+            <button onclick="closeModal()" style="background:#666; color:white; border:none; padding:12px 30px; border-radius:5px; margin-top:20px; cursor:pointer; margin-left:10px;">
+                <i class="fas fa-times"></i> Cancel
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // File upload handling
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                if (file.size > 100 * 1024 * 1024) {
+                    alert('File is too large! Maximum size is 100MB.');
+                    return;
+                }
+                startConversion('pdf-to-word', file.name);
+            }
+        });
+
+        // Drag and drop
+        const uploadBox = document.getElementById('uploadBox');
+        
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = 'var(--red)';
+            uploadBox.style.background = '#fff5f5';
+        });
+
+        uploadBox.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = '#ddd';
+            uploadBox.style.background = 'white';
+        });
+
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = '#ddd';
+            uploadBox.style.background = 'white';
+            
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                if (file.size > 100 * 1024 * 1024) {
+                    alert('File is too large! Maximum size is 100MB.');
+                    return;
+                }
+                startConversion('pdf-to-word', file.name);
+            }
+        });
+
+        let currentTool = 'pdf-to-word';
+        
+        function selectTool(tool) {
+            currentTool = tool;
+            const toolNames = {
+                'pdf-to-word': 'PDF to Word',
+                'pdf-to-word-ocr': 'PDF to Word (OCR)',
+                'pdf-to-excel': 'PDF to Excel',
+                'pdf-to-ppt': 'PDF to PowerPoint',
+                'word-to-pdf': 'Word to PDF',
+                'excel-to-pdf': 'Excel to PDF',
+                'ppt-to-pdf': 'PowerPoint to PDF',
+                'pdf-to-jpg': 'PDF to JPG',
+                'jpg-to-pdf': 'JPG to PDF',
+                'png-to-pdf': 'PNG to PDF',
+                'merge-pdf': 'Merge PDF',
+                'split-pdf': 'Split PDF',
+                'compress-pdf': 'Compress PDF',
+                'organize-pdf': 'Organize PDF',
+                'protect-pdf': 'Protect PDF',
+                'unlock-pdf': 'Unlock PDF'
+            };
+            
+            alert(`Selected: ${toolNames[tool]}\n\nPlease select a file to convert.`);
+            document.getElementById('fileInput').click();
+        }
+
+        function startConversion(tool, fileName) {
+            document.getElementById('selectedTool').innerHTML = 
+                `<strong>Converting:</strong> ${fileName}<br>
+                 <strong>Tool:</strong> ${tool.replace(/-/g, ' ').toUpperCase()}`;
+            
+            document.getElementById('conversionModal').style.display = 'flex';
+            
+            // Simulate conversion progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                document.getElementById('progress').style.width = progress + '%';
+                
+                if (progress <= 30) {
+                    document.getElementById('progressText').textContent = 'Uploading file...';
+                } else if (progress <= 70) {
+                    document.getElementById('progressText').textContent = 'Processing conversion...';
+                } else {
+                    document.getElementById('progressText').textContent = 'Finalizing...';
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    document.getElementById('progressText').textContent = 'Conversion complete!';
+                    document.getElementById('downloadBtn').style.display = 'inline-block';
+                    
+                    // Show ad before download (optional)
+                    showAd();
+                }
+            }, 300);
+        }
+
+        function downloadFile() {
+            // In real implementation, this would download actual converted file
+            alert('Download started! (Demo mode)');
+            closeModal();
+            
+            // Reset file input
+            document.getElementById('fileInput').value = '';
+        }
+
+        function closeModal() {
+            document.getElementById('conversionModal').style.display = 'none';
+            document.getElementById('progress').style.width = '0%';
+            document.getElementById('downloadBtn').style.display = 'none';
+        }
+
+        function showAd() {
+            // Show an ad before download
+            setTimeout(() => {
+                const showAd = confirm('Support us by viewing an ad before download?');
+                if (showAd) {
+                    // Redirect to ad or show ad modal
+                    window.open('https://example.com/ad', '_blank');
+                }
+            }, 500);
+        }
+
+        // Initialize ads
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+</html>
