@@ -10,36 +10,11 @@
     <meta name="keywords" content="PDF to Word, Word to PDF, JPG to PDF, Merge PDF, Split PDF, Compress PDF, PDF converter, free PDF tools, online PDF editor, convert PDF to Excel, PDF to PowerPoint, OCR PDF">
     <meta name="author" content="JJConverter">
     
-    <!-- Open Graph Tags for Social Media -->
+    <!-- Open Graph Tags -->
     <meta property="og:title" content="JJConverter - Free Online PDF Converter">
     <meta property="og:description" content="Convert PDF to Word, Word to PDF, JPG to PDF, Merge PDF, Split PDF - 100% Free">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jjconverter.com">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://jjconverter.com">
-    
-    <!-- Schema.org markup for Google -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "JJConverter",
-        "url": "https://jjconverter.com",
-        "description": "Free online PDF converter tools",
-        "applicationCategory": "UtilityApplication",
-        "operatingSystem": "Any",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-        },
-        "author": {
-            "@type": "Organization",
-            "name": "JJConverter"
-        }
-    }
-    </script>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -54,7 +29,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/337/337946.png">
     
-    <!-- Google AdSense (Replace with your actual ID) -->
+    <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3940256099942544" crossorigin="anonymous"></script>
     
     <!-- Light Color Theme Styles -->
@@ -373,6 +348,12 @@
             line-height: 1.5;
         }
         
+        /* Selected tool style */
+        .tool-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
         /* Square Ad Container */
         .square-ad {
             background: var(--light);
@@ -598,6 +579,17 @@
             margin-bottom: 20px;
         }
         
+        #selectedTool {
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-size: 16px;
+            line-height: 1.5;
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
         #progressBar {
             height: 12px;
             background: var(--light-gray);
@@ -631,6 +623,9 @@
             cursor: pointer;
             margin: 5px;
             transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .modal-btn:hover {
@@ -700,9 +695,6 @@
     </style>
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXX" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-
     <!-- Header -->
     <header>
         <div class="container">
@@ -788,7 +780,7 @@
             
             <div class="tools-grid">
                 <!-- PDF to Office -->
-                <div class="tool-card" onclick="selectTool('pdf-to-word')">
+                <div class="tool-card" data-tool="pdf-to-word">
                     <div class="tool-icon">
                         <i class="fas fa-file-word"></i>
                     </div>
@@ -796,15 +788,15 @@
                     <p class="tool-desc">Convert PDF files to editable Word documents with perfect formatting</p>
                 </div>
                 
-                <div class="tool-card" onclick="selectTool('word-to-pdf')">
+                <div class="tool-card" data-tool="pdf-to-word-ocr">
                     <div class="tool-icon">
-                        <i class="fas fa-file-pdf"></i>
+                        <i class="fas fa-file-word"></i><i class="fas fa-search" style="font-size: 20px; margin-left: 5px;"></i>
                     </div>
-                    <h3 class="tool-title">Word to PDF</h3>
-                    <p class="tool-desc">Convert Word documents to PDF format while preserving layout</p>
+                    <h3 class="tool-title">PDF to Word (OCR)</h3>
+                    <p class="tool-desc">Convert scanned PDFs to editable Word using OCR technology</p>
                 </div>
                 
-                <div class="tool-card" onclick="selectTool('pdf-to-excel')">
+                <div class="tool-card" data-tool="pdf-to-excel">
                     <div class="tool-icon">
                         <i class="fas fa-file-excel"></i>
                     </div>
@@ -812,15 +804,7 @@
                     <p class="tool-desc">Extract tables and data from PDF to Excel spreadsheets</p>
                 </div>
                 
-                <div class="tool-card" onclick="selectTool('excel-to-pdf')">
-                    <div class="tool-icon">
-                        <i class="fas fa-file-pdf"></i>
-                    </div>
-                    <h3 class="tool-title">Excel to PDF</h3>
-                    <p class="tool-desc">Convert Excel spreadsheets to PDF with formatting intact</p>
-                </div>
-                
-                <div class="tool-card" onclick="selectTool('pdf-to-ppt')">
+                <div class="tool-card" data-tool="pdf-to-ppt">
                     <div class="tool-icon">
                         <i class="fas fa-file-powerpoint"></i>
                     </div>
@@ -828,7 +812,24 @@
                     <p class="tool-desc">Convert PDF presentations to editable PowerPoint slides</p>
                 </div>
                 
-                <div class="tool-card" onclick="selectTool('ppt-to-pdf')">
+                <!-- Office to PDF -->
+                <div class="tool-card" data-tool="word-to-pdf">
+                    <div class="tool-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3 class="tool-title">Word to PDF</h3>
+                    <p class="tool-desc">Convert Word documents to PDF format while preserving layout</p>
+                </div>
+                
+                <div class="tool-card" data-tool="excel-to-pdf">
+                    <div class="tool-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3 class="tool-title">Excel to PDF</h3>
+                    <p class="tool-desc">Convert Excel spreadsheets to PDF with formatting intact</p>
+                </div>
+                
+                <div class="tool-card" data-tool="ppt-to-pdf">
                     <div class="tool-icon">
                         <i class="fas fa-file-pdf"></i>
                     </div>
@@ -837,7 +838,7 @@
                 </div>
                 
                 <!-- Image Tools -->
-                <div class="tool-card" onclick="selectTool('jpg-to-pdf')">
+                <div class="tool-card" data-tool="jpg-to-pdf">
                     <div class="tool-icon">
                         <i class="fas fa-file-pdf"></i>
                     </div>
@@ -845,7 +846,7 @@
                     <p class="tool-desc">Convert JPG images to PDF documents quickly and easily</p>
                 </div>
                 
-                <div class="tool-card" onclick="selectTool('pdf-to-jpg')">
+                <div class="tool-card" data-tool="pdf-to-jpg">
                     <div class="tool-icon">
                         <i class="fas fa-file-image"></i>
                     </div>
@@ -853,7 +854,7 @@
                     <p class="tool-desc">Convert PDF pages to high-quality JPG image files</p>
                 </div>
                 
-                <div class="tool-card" onclick="selectTool('png-to-pdf')">
+                <div class="tool-card" data-tool="png-to-pdf">
                     <div class="tool-icon">
                         <i class="fas fa-file-pdf"></i>
                     </div>
@@ -862,7 +863,7 @@
                 </div>
                 
                 <!-- PDF Tools -->
-                <div class="tool-card" onclick="selectTool('merge-pdf')">
+                <div class="tool-card" data-tool="merge-pdf">
                     <div class="tool-icon">
                         <i class="fas fa-object-group"></i>
                     </div>
@@ -870,7 +871,7 @@
                     <p class="tool-desc">Combine multiple PDF files into one document in any order</p>
                 </div>
                 
-                <div class="tool-card" onclick="selectTool('split-pdf')">
+                <div class="tool-card" data-tool="split-pdf">
                     <div class="tool-icon">
                         <i class="fas fa-cut"></i>
                     </div>
@@ -878,7 +879,7 @@
                     <p class="tool-desc">Split PDF files into multiple documents by pages or ranges</p>
                 </div>
                 
-                <div class="tool-card" onclick="selectTool('compress-pdf')">
+                <div class="tool-card" data-tool="compress-pdf">
                     <div class="tool-icon">
                         <i class="fas fa-compress-alt"></i>
                     </div>
@@ -886,15 +887,15 @@
                     <p class="tool-desc">Reduce PDF file size without losing quality for easy sharing</p>
                 </div>
                 
-                <div class="tool-card" onclick="selectTool('pdf-ocr')">
+                <div class="tool-card" data-tool="organize-pdf">
                     <div class="tool-icon">
-                        <i class="fas fa-eye"></i>
+                        <i class="fas fa-sort-numeric-up"></i>
                     </div>
-                    <h3 class="tool-title">PDF OCR</h3>
-                    <p class="tool-desc">Extract text from scanned PDFs using Optical Character Recognition</p>
+                    <h3 class="tool-title">Organize PDF</h3>
+                    <p class="tool-desc">Reorder, rotate, or delete PDF pages as needed</p>
                 </div>
                 
-                <div class="tool-card" onclick="selectTool('protect-pdf')">
+                <div class="tool-card" data-tool="protect-pdf">
                     <div class="tool-icon">
                         <i class="fas fa-lock"></i>
                     </div>
@@ -902,7 +903,7 @@
                     <p class="tool-desc">Add password protection to secure your PDF documents</p>
                 </div>
                 
-                <div class="tool-card" onclick="selectTool('unlock-pdf')">
+                <div class="tool-card" data-tool="unlock-pdf">
                     <div class="tool-icon">
                         <i class="fas fa-unlock"></i>
                     </div>
@@ -999,12 +1000,12 @@
                 <div class="footer-section">
                     <h3>PDF Tools</h3>
                     <ul>
-                        <li><a href="#tools">PDF to Word Converter</a></li>
-                        <li><a href="#tools">Word to PDF Converter</a></li>
-                        <li><a href="#tools">JPG to PDF Converter</a></li>
-                        <li><a href="#tools">Merge PDF Files</a></li>
-                        <li><a href="#tools">Split PDF Documents</a></li>
-                        <li><a href="#tools">Compress PDF Size</a></li>
+                        <li><a href="#tools" onclick="selectToolFromFooter('pdf-to-word')">PDF to Word Converter</a></li>
+                        <li><a href="#tools" onclick="selectToolFromFooter('word-to-pdf')">Word to PDF Converter</a></li>
+                        <li><a href="#tools" onclick="selectToolFromFooter('jpg-to-pdf')">JPG to PDF Converter</a></li>
+                        <li><a href="#tools" onclick="selectToolFromFooter('merge-pdf')">Merge PDF Files</a></li>
+                        <li><a href="#tools" onclick="selectToolFromFooter('split-pdf')">Split PDF Documents</a></li>
+                        <li><a href="#tools" onclick="selectToolFromFooter('compress-pdf')">Compress PDF Size</a></li>
                     </ul>
                 </div>
                 
@@ -1045,7 +1046,7 @@
     <div id="conversionModal">
         <div class="modal-content">
             <h2>Converting Your File</h2>
-            <div id="selectedTool">PDF to Word Conversion</div>
+            <div id="selectedTool">Ready to convert...</div>
             
             <div id="progressBar">
                 <div id="progress"></div>
@@ -1063,250 +1064,21 @@
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- Simple JavaScript for Footer Links -->
     <script>
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('JJConverter - Free PDF Tools loaded successfully!');
-            
-            // File upload handling
-            const fileInput = document.getElementById('fileInput');
-            const uploadBox = document.getElementById('uploadBox');
-            
-            // Tool selection
-            document.querySelectorAll('.tool-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    const toolName = this.querySelector('.tool-title').textContent;
-                    selectTool(toolName.toLowerCase().replace(/\s+/g, '-'));
-                });
-            });
-            
-            // File input change
-            fileInput.addEventListener('change', function(e) {
-                if (e.target.files.length > 0) {
-                    const file = e.target.files[0];
-                    
-                    // Check file size
-                    if (file.size > 100 * 1024 * 1024) {
-                        alert('File is too large! Maximum size is 100MB.');
-                        return;
-                    }
-                    
-                    // Show file selected
-                    showFileSelected(file);
-                }
-            });
-            
-            // Drag and drop functionality
-            uploadBox.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                uploadBox.style.borderColor = 'var(--primary)';
-                uploadBox.style.background = 'var(--light)';
-            });
-            
-            uploadBox.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                uploadBox.style.borderColor = 'var(--border)';
-                uploadBox.style.background = 'var(--lighter)';
-            });
-            
-            uploadBox.addEventListener('drop', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                uploadBox.style.borderColor = 'var(--border)';
-                uploadBox.style.background = 'var(--lighter)';
-                
-                if (e.dataTransfer.files.length > 0) {
-                    const file = e.dataTransfer.files[0];
-                    
-                    if (file.size > 100 * 1024 * 1024) {
-                        alert('File is too large! Maximum size is 100MB.');
-                        return;
-                    }
-                    
-                    showFileSelected(file);
-                }
-            });
-            
-            // Initialize Google Ads
-            if (typeof adsbygoogle !== 'undefined') {
-                adsbygoogle.push({});
+        function selectToolFromFooter(tool) {
+            // Find the tool card and click it
+            const toolCard = document.querySelector(`.tool-card[data-tool="${tool}"]`);
+            if (toolCard) {
+                toolCard.click();
             }
-        });
-        
-        let selectedFile = null;
-        let currentTool = 'pdf-to-word';
-        
-        function selectTool(tool) {
-            currentTool = tool;
-            
-            // Update active tool visual
-            document.querySelectorAll('.tool-card').forEach(card => {
-                card.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-            
-            // If file already selected, start conversion
-            if (selectedFile) {
-                startConversion();
-            } else {
-                // Ask user to select file
-                alert(`Selected: ${tool.replace(/-/g, ' ').toUpperCase()}\n\nPlease select a file to convert.`);
-                document.getElementById('fileInput').click();
-            }
-        }
-        
-        function showFileSelected(file) {
-            selectedFile = file;
-            
-            // Update upload box with file info
-            document.getElementById('uploadBox').innerHTML = `
-                <div style="text-align: center;">
-                    <i class="fas fa-file" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
-                    <h3>${file.name}</h3>
-                    <p>Size: ${formatFileSize(file.size)} | Type: ${file.type || 'Unknown'}</p>
-                    <button onclick="startConversion()" class="upload-btn" style="margin-top: 20px;">
-                        <i class="fas fa-sync-alt"></i> Convert Now
-                    </button>
-                    <button onclick="cancelSelection()" style="background: var(--gray); color: white; border: none; padding: 12px 24px; border-radius: 8px; margin-left: 10px; cursor: pointer; font-weight: 600;">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                </div>
-            `;
-        }
-        
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-        
-        function startConversion() {
-            if (!selectedFile) {
-                alert('Please select a file first!');
-                return;
-            }
-            
-            // Show conversion modal
-            document.getElementById('conversionModal').style.display = 'flex';
-            document.getElementById('selectedTool').textContent = 
-                `Converting ${selectedFile.name} to ${currentTool.replace(/-/g, ' ').toUpperCase()}`;
-            
-            // Reset progress
-            document.getElementById('progress').style.width = '0%';
-            document.getElementById('downloadBtn').style.display = 'none';
-            document.getElementById('progressText').textContent = 'Uploading file...';
-            
-            // Simulate conversion process
-            simulateConversion();
-        }
-        
-        function simulateConversion() {
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 2;
-                document.getElementById('progress').style.width = progress + '%';
-                
-                if (progress <= 30) {
-                    document.getElementById('progressText').textContent = 'Uploading file to secure servers...';
-                } else if (progress <= 60) {
-                    document.getElementById('progressText').textContent = 'Processing conversion...';
-                } else if (progress <= 90) {
-                    document.getElementById('progressText').textContent = 'Optimizing output quality...';
-                } else {
-                    document.getElementById('progressText').textContent = 'Finalizing conversion...';
-                }
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    document.getElementById('progressText').textContent = 'Conversion complete! Ready to download.';
-                    document.getElementById('downloadBtn').style.display = 'inline-block';
-                    
-                    // Show ad before download (optional)
-                    setTimeout(showAdBeforeDownload, 500);
-                }
-            }, 50);
-        }
-        
-        function showAdBeforeDownload() {
-            // This is where you can show an ad before download
-            // For now, just a console message
-            console.log('Ad opportunity before download');
-        }
-        
-        function downloadFile() {
-            // In real implementation, this would download the actual converted file
-            // For demo, create a dummy download
-            const content = `JJConverter - File Conversion Demo\n\nOriginal: ${selectedFile.name}\nConverted to: ${currentTool}\nDate: ${new Date().toLocaleString()}\n\nThank you for using JJConverter!\n\nFor real file conversion, sign up for our API service at JJconverter@gmail.com`;
-            
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `converted-${currentTool}-${Date.now()}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            URL.revokeObjectURL(url);
-            
-            // Show thank you message
-            setTimeout(() => {
-                alert('File downloaded successfully!\n\nThank you for using JJConverter.\n\nFor real file conversion capabilities, please contact us at JJconverter@gmail.com for API access.');
-            }, 500);
-            
-            closeModal();
-            resetFileInput();
-        }
-        
-        function cancelSelection() {
-            selectedFile = null;
-            resetFileInput();
-        }
-        
-        function resetFileInput() {
-            document.getElementById('fileInput').value = '';
-            document.getElementById('uploadBox').innerHTML = `
-                <div class="upload-icon">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                </div>
-                <h2>Select Your PDF File</h2>
-                <p class="upload-text">Drag & drop your file here or click to browse</p>
-                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                    <i class="fas fa-folder-open"></i> Choose File
-                </button>
-                <p class="file-size-note">Maximum file size: 100 MB</p>
-                <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png">
-            `;
-            
-            // Re-attach event listeners
-            const newFileInput = document.getElementById('fileInput');
-            newFileInput.addEventListener('change', function(e) {
-                if (e.target.files.length > 0) {
-                    const file = e.target.files[0];
-                    if (file.size > 100 * 1024 * 1024) {
-                        alert('File is too large! Maximum size is 100MB.');
-                        return;
-                    }
-                    showFileSelected(file);
-                }
-            });
-        }
-        
-        function closeModal() {
-            document.getElementById('conversionModal').style.display = 'none';
-            document.getElementById('progress').style.width = '0%';
-            document.getElementById('downloadBtn').style.display = 'none';
         }
         
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
+                if (this.getAttribute('onclick')) return; // Skip if has onclick
+                
                 e.preventDefault();
                 const targetId = this.getAttribute('href');
                 if (targetId === '#') return;
@@ -1320,6 +1092,9 @@
                 }
             });
         });
+        
+        // Initialize ads
+        (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
 </body>
 </html>
