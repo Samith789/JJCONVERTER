@@ -1,71 +1,76 @@
-// script.js - Main website functionality
+// script.js - Main functionality for JJConverter
 
 document.addEventListener('DOMContentLoaded', function() {
-    // File upload handling
-    const fileInput = document.getElementById('fileInput');
-    const uploadBox = document.getElementById('uploadBox');
+    console.log('JJConverter loaded!');
     
-    // Tool selection
-    const toolCards = document.querySelectorAll('.tool-card');
-    toolCards.forEach(card => {
-        card.addEventListener('click', function() {
-            const tool = this.getAttribute('data-tool') || 
-                        this.querySelector('.tool-title').textContent.toLowerCase().replace(/\s+/g, '-');
-            selectTool(tool);
-        });
-    });
-    
-    // Drag and drop
-    uploadBox.addEventListener('dragover', handleDragOver);
-    uploadBox.addEventListener('dragleave', handleDragLeave);
-    uploadBox.addEventListener('drop', handleDrop);
-    
-    // File input change
-    fileInput.addEventListener('change', handleFileSelect);
-    
-    // Progress listener
-    window.addEventListener('conversion-progress', function(e) {
-        updateProgress(e.detail.message, e.detail.percent);
-    });
+    // Initialize
+    initFileUpload();
+    initToolSelection();
+    initProgressListener();
 });
 
 let selectedFile = null;
 let currentTool = 'pdf-to-word';
 
-function handleDragOver(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    e.currentTarget.style.borderColor = '#f40f3e';
-    e.currentTarget.style.background = '#fff5f5';
-}
-
-function handleDragLeave(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    e.currentTarget.style.borderColor = '#ddd';
-    e.currentTarget.style.background = 'white';
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-    e.stopPropagation();
+function initFileUpload() {
+    const fileInput = document.getElementById('fileInput');
+    const uploadBox = document.getElementById('uploadBox');
     
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-        handleFile(files[0]);
-    }
+    if (!fileInput || !uploadBox) return;
     
-    e.currentTarget.style.borderColor = '#ddd';
-    e.currentTarget.style.background = 'white';
+    // File input change
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+    
+    // Drag and drop
+    uploadBox.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.currentTarget.style.borderColor = '#4a6fa5';
+        e.currentTarget.style.background = '#f0f4ff';
+    });
+    
+    uploadBox.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        e.currentTarget.style.borderColor = '#ddd';
+        e.currentTarget.style.background = 'white';
+    });
+    
+    uploadBox.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.currentTarget.style.borderColor = '#ddd';
+        e.currentTarget.style.background = 'white';
+        
+        if (e.dataTransfer.files.length > 0) {
+            handleFileSelect(e.dataTransfer.files[0]);
+        }
+    });
 }
 
-function handleFileSelect(e) {
-    if (e.target.files.length > 0) {
-        handleFile(e.target.files[0]);
-    }
+function initToolSelection() {
+    document.querySelectorAll('.tool-card').forEach(card => {
+        card.addEventListener('click', function() {
+            // Get tool name from data attribute or text
+            const tool = this.getAttribute('data-tool') || 
+                        this.querySelector('.tool-title').textContent
+                            .toLowerCase()
+                            .replace(/\s+/g, '-')
+                            .replace('pdf-to-word-(ocr)', 'pdf-to-word-ocr');
+            
+            selectTool(tool);
+        });
+    });
 }
 
-function handleFile(file) {
+function initProgressListener() {
+    window.addEventListener('api-progress', function(e) {
+        updateProgress(e.detail.message, e.detail.percent);
+    });
+}
+
+function handleFileSelect(file) {
     // Validate file
     if (!validateFile(file)) {
         return;
@@ -73,33 +78,37 @@ function handleFile(file) {
     
     selectedFile = file;
     
-    // Show file info
+    // Update UI to show selected file
     document.getElementById('uploadBox').innerHTML = `
-        <div style="text-align: center;">
-            <i class="fas fa-file" style="font-size: 50px; color: #f40f3e; margin-bottom: 20px;"></i>
-            <h3>${file.name}</h3>
+        <div style="text-align: center; padding: 20px;">
+            <i class="fas fa-check-circle" style="font-size: 50px; color: #28a745; margin-bottom: 15px;"></i>
+            <h3 style="color: #2c3e50;">File Selected</h3>
+            <p><strong>${file.name}</strong></p>
             <p>Size: ${formatFileSize(file.size)}</p>
-            <button onclick="startRealConversion()" class="upload-btn" style="margin-top: 20px;">
-                <i class="fas fa-sync-alt"></i> Convert Now
-            </button>
-            <button onclick="cancelSelection()" style="background: #666; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-left: 10px; cursor: pointer;">
-                <i class="fas fa-times"></i> Cancel
-            </button>
+            <div style="margin-top: 25px;">
+                <button onclick="startRealConversion()" class="upload-btn">
+                    <i class="fas fa-sync-alt"></i> Convert Now
+                </button>
+                <button onclick="cancelSelection()" style="background: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 8px; margin-left: 10px; cursor: pointer;">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
         </div>
     `;
 }
 
 function validateFile(file) {
-    const maxSize = 100 * 1024 * 1024; // 100MB
-    
-    if (file.size > maxSize) {
+    // Check file size (100MB max)
+    if (file.size > 100 * 1024 * 1024) {
         alert('File is too large! Maximum size is 100MB.');
         return false;
     }
     
-    // Check file extension
-    const allowedExtensions = /(\.pdf|\.doc|\.docx|\.xls|\.xlsx|\.ppt|\.pptx|\.jpg|\.jpeg|\.png)$/i;
-    if (!allowedExtensions.exec(file.name)) {
+    // Check file type
+    const allowedExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.jpg', '.jpeg', '.png'];
+    const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+    
+    if (!allowedExtensions.includes(fileExt)) {
         alert('Please upload a valid file (PDF, Word, Excel, PowerPoint, or Image).');
         return false;
     }
@@ -118,14 +127,19 @@ function formatFileSize(bytes) {
 function selectTool(tool) {
     currentTool = tool;
     
-    // Update UI
-    toolCards = document.querySelectorAll('.tool-card');
-    toolCards.forEach(card => card.classList.remove('selected'));
+    // Highlight selected tool
+    document.querySelectorAll('.tool-card').forEach(card => {
+        card.classList.remove('selected');
+    });
     event.currentTarget.classList.add('selected');
     
-    // Show upload prompt
-    alert(`Selected: ${tool.replace(/-/g, ' ').toUpperCase()}\n\nPlease select a file to convert.`);
-    document.getElementById('fileInput').click();
+    // If file already selected, show convert button
+    if (selectedFile) {
+        alert(`Tool selected: ${tool.replace(/-/g, ' ').toUpperCase()}\n\nClick "Convert Now" to start conversion.`);
+    } else {
+        alert(`Selected: ${tool.replace(/-/g, ' ').toUpperCase()}\n\nPlease select a file to convert.`);
+        document.getElementById('fileInput').click();
+    }
 }
 
 async function startRealConversion() {
@@ -134,40 +148,38 @@ async function startRealConversion() {
         return;
     }
     
-    // Parse format from tool name
-    const [fromFormat, toFormat] = currentTool.split('-to-');
-    
-    if (!fromFormat || !toFormat) {
-        alert('Invalid tool selection');
-        return;
-    }
-    
     // Show conversion modal
     showConversionModal();
     
+    // Update modal text
+    document.getElementById('selectedTool').innerHTML = `
+        <strong>Converting:</strong> ${selectedFile.name}<br>
+        <strong>Tool:</strong> ${currentTool.replace(/-/g, ' ').toUpperCase()}
+    `;
+    
     try {
-        // Use the API
-        const result = await window.JJConverterAPI.convertFile(
-            selectedFile,
-            fromFormat,
-            toFormat
-        );
+        // Use the API for real conversion
+        const result = await window.JJConverterAPI.convertFile(selectedFile, currentTool);
         
         if (result.success) {
-            if (result.isDemo) {
-                // Demo mode
-                document.getElementById('progressText').innerHTML = `
-                    ${result.message}<br><br>
-                    <small>For real conversion, sign up at:</small><br>
-                    <a href="https://pdf.co/register" target="_blank" style="color: #f40f3e;">PDF.co (500 free/month)</a> or 
-                    <a href="https://cloudconvert.com/signup" target="_blank" style="color: #f40f3e;">CloudConvert (25 free/month)</a>
-                `;
-            }
-            
             // Show download button
-            document.getElementById('downloadBtn').style.display = 'block';
-            document.getElementById('downloadBtn').setAttribute('data-url', result.downloadUrl);
-            document.getElementById('downloadBtn').setAttribute('data-filename', result.fileName || 'converted-file');
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.style.display = 'block';
+            downloadBtn.setAttribute('data-url', result.downloadUrl);
+            downloadBtn.setAttribute('data-filename', result.fileName);
+            downloadBtn.setAttribute('data-is-demo', result.isDemo);
+            
+            // Update progress message
+            if (result.isDemo) {
+                document.getElementById('progressText').innerHTML = `
+                    Demo conversion complete!<br>
+                    <small style="color: #ff7b54;">
+                        ⚠️ Add API key for real conversion with exact formatting
+                    </small>
+                `;
+            } else {
+                document.getElementById('progressText').textContent = 'Real conversion complete!';
+            }
             
         } else {
             document.getElementById('progressText').textContent = `Error: ${result.error}`;
@@ -180,11 +192,24 @@ async function startRealConversion() {
 
 function showConversionModal() {
     document.getElementById('conversionModal').style.display = 'flex';
-    document.getElementById('selectedTool').textContent = 
-        `Converting ${selectedFile.name} using ${currentTool.replace(/-/g, ' ').toUpperCase()}`;
+    document.getElementById('progress').style.width = '0%';
+    document.getElementById('downloadBtn').style.display = 'none';
+    document.getElementById('progressText').textContent = 'Starting conversion...';
     
-    // Reset progress
-    updateProgress('Starting conversion...', 0);
+    // Start progress animation
+    simulateProgress();
+}
+
+function simulateProgress() {
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 1;
+        document.getElementById('progress').style.width = progress + '%';
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+        }
+    }, 50);
 }
 
 function updateProgress(message, percent) {
@@ -192,52 +217,86 @@ function updateProgress(message, percent) {
     document.getElementById('progress').style.width = percent + '%';
 }
 
-function downloadConvertedFile() {
+function downloadFile() {
     const btn = document.getElementById('downloadBtn');
     const url = btn.getAttribute('data-url');
     const filename = btn.getAttribute('data-filename');
+    const isDemo = btn.getAttribute('data-is-demo') === 'true';
     
-    if (url.startsWith('#demo-')) {
-        // Demo download - create dummy file
-        const content = 'This is a demo converted file.\n\nFor real conversion, sign up for an API key.\n\nJJConverter - Free PDF Tools';
-        const blob = new Blob([content], { type: 'text/plain' });
-        const demoUrl = URL.createObjectURL(blob);
-        
+    if (url.startsWith('blob:') || url.startsWith('data:')) {
+        // Local blob or data URL
         const a = document.createElement('a');
-        a.href = demoUrl;
+        a.href = url;
         a.download = filename;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        
-        URL.revokeObjectURL(demoUrl);
-    } else {
-        // Real download
+    } else if (url.startsWith('http')) {
+        // External URL from API
         window.open(url, '_blank');
+    } else {
+        // Fallback
+        alert('Downloading: ' + filename);
     }
     
-    // Show thank you message
-    setTimeout(() => {
-        alert('Thank you for using JJConverter!\n\nConsider supporting us by:\n1. Sharing with friends\n2. Disabling ad blocker\n3. Trying premium features');
-    }, 1000);
+    // Show message if demo
+    if (isDemo) {
+        setTimeout(() => {
+            showUpgradeMessage();
+        }, 1000);
+    }
+    
+    closeModal();
+}
+
+function showUpgradeMessage() {
+    const message = `
+        ⚠️ DEMO VERSION
+        
+        You downloaded a demo file.
+        
+        For REAL conversion with:
+        ✅ Exact formatting preserved
+        ✅ Tables converted perfectly  
+        ✅ Fonts and styles kept
+        ✅ Images included
+        ✅ Layout maintained
+        
+        Get FREE API key (500 conversions/month):
+        1. Go to: https://pdf.co/register
+        2. Sign up for free
+        3. Get API key
+        4. Paste in api.js file
+        
+        Need help? Email: JJconverter@gmail.com
+    `;
+    
+    alert(message);
 }
 
 function cancelSelection() {
     selectedFile = null;
+    resetUploadBox();
+}
+
+function resetUploadBox() {
     document.getElementById('uploadBox').innerHTML = `
         <div class="upload-icon">
             <i class="fas fa-cloud-upload-alt"></i>
         </div>
-        <h2>Select PDF file</h2>
-        <p class="upload-text">or drag and drop here</p>
+        <h2>Select Your PDF File</h2>
+        <p class="upload-text">Drag & drop your file here or click to browse</p>
         <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
             <i class="fas fa-folder-open"></i> Choose File
         </button>
-        <p style="margin-top: 15px; color: #999; font-size: 14px;">Maximum file size 100 MB</p>
+        <p class="file-size-note">Maximum file size: 100 MB</p>
         <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png">
     `;
     
-    // Re-attach event listeners
-    const newFileInput = document.getElementById('fileInput');
-    newFileInput.addEventListener('change', handleFileSelect);
+    // Reinitialize
+    initFileUpload();
+}
+
+function closeModal() {
+    document.getElementById('conversionModal').style.display = 'none';
 }
