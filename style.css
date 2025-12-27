@@ -1,47 +1,23 @@
-/* Additional Styles for JJConverter */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
+/* JJConverter - Additional Styles */
 
-body {
-    font-family: 'Open Sans', sans-serif;
-}
-
-/* Tool categories */
-.tool-category {
-    margin: 40px 0 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #eee;
-    color: var(--dark);
-    font-size: 24px;
-}
-
-/* Premium badge */
-.premium-badge {
-    background: #ffd700;
-    color: #000;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 10px;
-    margin-left: 5px;
-    vertical-align: super;
+/* Active tool state */
+.tool-card.active {
+    border-color: var(--primary) !important;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 /* Loading animation */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
 .loading {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid var(--red);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: pulse 1.5s infinite;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Mobile menu */
+/* Mobile menu toggle (for future enhancement) */
 .mobile-menu-btn {
     display: none;
     background: none;
@@ -49,25 +25,53 @@ body {
     font-size: 24px;
     color: var(--dark);
     cursor: pointer;
+    padding: 10px;
 }
 
+/* Responsive ads */
 @media (max-width: 768px) {
-    .mobile-menu-btn {
-        display: block;
+    .banner-ad-top ins,
+    .horizontal-ad ins {
+        width: 100% !important;
+        height: auto !important;
     }
     
-    .nav-menu {
-        display: none;
-        flex-direction: column;
-        position: absolute;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        background: white;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    .square-ad ins {
+        width: 300px !important;
+        height: 250px !important;
     }
-    
-    .nav-menu.active {
-        display: flex;
+}
+
+/* Print styles */
+@media print {
+    .banner-ad-top,
+    .horizontal-ad,
+    .square-ad,
+    footer,
+    header {
+        display: none !important;
+    }
+}
+
+/* Accessibility improvements */
+.tool-card:focus {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
+
+button:focus {
+    outline: 3px solid var(--secondary);
+    outline-offset: 2px;
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --light: #1a1a1a;
+        --lighter: #2d2d2d;
+        --dark: #ffffff;
+        --gray: #cccccc;
+        --light-gray: #3d3d3d;
+        --border: #4d4d4d;
     }
 }
