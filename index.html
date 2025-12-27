@@ -306,6 +306,7 @@
             text-align: center;
             margin: 1rem auto;
             transition: all 0.3s ease;
+            width: 100%;
         }
 
         .download-btn:hover {
@@ -395,6 +396,14 @@
         /* Hide elements */
         .hidden {
             display: none;
+        }
+        
+        /* Status text */
+        .status-text {
+            text-align: center;
+            margin: 10px 0;
+            color: #555;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -550,7 +559,7 @@
                 <div class="progress-bar">
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
-                <div id="statusText" style="text-align: center; margin: 10px 0; color: #555;">
+                <div id="statusText" class="status-text">
                     Starting conversion...
                 </div>
             </div>
@@ -614,6 +623,7 @@
         // Current conversion type
         let currentConverter = 'pdf-to-word';
         let selectedFile = null;
+        let isProcessing = false;
 
         // Show converter for specific tool
         function showConverter(toolType) {
@@ -642,10 +652,8 @@
                 'pdf-to-jpg': 'fa-file-image'
             };
             
-            document.getElementById('converter-title').innerHTML = `
-                <i class="fas ${icons[toolType]}"></i>
-                ${titles[toolType]}
-            `;
+            const titleElement = document.getElementById('converter-title');
+            titleElement.innerHTML = `<i class="fas ${icons[toolType]}"></i> ${titles[toolType]}`;
             
             // Reset UI
             resetConverterUI();
@@ -671,6 +679,8 @@
             
             // Update upload area
             const uploadArea = document.getElementById('uploadArea');
+            const fileSize = (file.size / 1024 / 1024).toFixed(2);
+            
             uploadArea.innerHTML = `
                 <div class="upload-icon">
                     <i class="fas fa-file" style="color: #667eea;"></i>
@@ -679,7 +689,7 @@
                     ${file.name}
                 </div>
                 <div class="upload-subtext">
-                    ${(file.size / 1024 / 1024).toFixed(2)} MB
+                    ${fileSize} MB
                 </div>
                 <div class="upload-subtext" style="color: #667eea; margin-top: 10px;">
                     Click to change file
@@ -689,7 +699,9 @@
 
         // Start conversion
         async function startConversion() {
-            if (!selectedFile) return;
+            if (!selectedFile || isProcessing) return;
+            
+            isProcessing = true;
             
             // Disable convert button and show progress
             document.getElementById('convertBtn').disabled = true;
@@ -709,141 +721,221 @@
                 console.error('Conversion error:', error);
                 alert('Conversion failed: ' + error.message);
                 resetConverterUI();
+            } finally {
+                isProcessing = false;
             }
         }
 
         // Convert using iLovePDF API
         async function convertWithILovePDF() {
-            // Add iLovePDF SDK dynamically
-            if (!window.ilovepdf) {
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/@ilovepdf/ilovepdf-js-sdk@1.1.2/dist/ilovepdf.min.js';
-                document.head.appendChild(script);
-                await new Promise(resolve => setTimeout(resolve, 2000));
+            try {
+                // Check if iLovePDF SDK is loaded
+                if (!window.ilovepdf) {
+                    // Load iLovePDF SDK
+                    await new Promise((resolve, reject) => {
+                        const script = document.createElement('script');
+                        script.src = 'https://cdn.jsdelivr.net/npm/@ilovepdf/ilovepdf-js-sdk@1.1.2/dist/ilovepdf.min.js';
+                        script.onload = resolve;
+                        script.onerror = reject;
+                        document.head.appendChild(script);
+                    });
+                    
+                    // Wait a bit for SDK to initialize
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                
+                updateProgress(30, 'Processing conversion...');
+                
+                // ⭐⭐⭐ YOUR iLovePDF PUBLIC KEY ⭐⭐⭐
+                const PUBLIC_KEY = 'project_public_7c764d4690fbad9efbf0244b1fc331f4_HN2D969bf33196deefe299718c89c1164141c';
+                
+                if (!window.ilovepdf) {
+                    throw new Error('iLovePDF SDK failed to load');
+                }
+                
+                const task = new window.ilovepdf.PdfToWordTask(PUBLIC_KEY);
+                await task.start();
+                await task.addFile('file', selectedFile);
+                
+                updateProgress(50, 'Converting file...');
+                await task.process();
+                
+                updateProgress(80, 'Finalizing document...');
+                const data = await task.download();
+                
+                updateProgress(100, 'Conversion complete!');
+                
+                // Create download link
+                const downloadBtn = document.getElementById('downloadBtn');
+                const blob = new Blob([data], { 
+                    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                });
+                const url = URL.createObjectURL(blob);
+                
+                downloadBtn.href = url;
+                downloadBtn.download = selectedFile.name.replace('.pdf', '.docx').replace('.PDF', '.docx');
+                downloadBtn.style.display = 'block';
+                
+                // Smooth scroll to download button
+                setTimeout(() => {
+                    downloadBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+                
+            } catch (error) {
+                console.error('iLovePDF conversion error:', error);
+                
+                // Fallback to simulation if API fails
+                if (error.message.includes('public key') || error.message.includes('authentication')) {
+                    alert('API Key Error: Please check your iLovePDF public key. Falling back to demo mode.');
+                    simulateConversion();
+                } else {
+                    throw error;
+                }
             }
-            
-            updateProgress(30, 'Processing conversion...');
-            
-            // ⭐⭐⭐ ADD YOUR iLovePDF PUBLIC KEY HERE ⭐⭐⭐
-            const PUBLIC_KEY = 'project_public_7c764d4690fbad9efbf0244b1fc331f4_HN2D969bf33196deefe299718c89c1164141c';
-            
-            const task = new window.ilovepdf.PdfToWordTask(PUBLIC_KEY);
-            await task.start();
-            await task.addFile('file', selectedFile);
-            
-            updateProgress(50, 'Converting file...');
-            await task.process();
-            
-            updateProgress(80, 'Finalizing document...');
-            const data = await task.download();
-            
-            updateProgress(100, 'Conversion complete!');
-            
-            // Create download link
-            const downloadBtn = document.getElementById('downloadBtn');
-            const extension = currentConverter === 'pdf-to-word' ? '.docx' : '.pdf';
-            const blob = new Blob([data], { 
-                type: currentConverter === 'pdf-to-word' 
-                    ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                    : 'application/pdf'
-            });
-            const url = URL.createObjectURL(blob);
-            
-            downloadBtn.href = url;
-            downloadBtn.download = selectedFile.name.replace(/\.[^/.]+$/, "") + extension;
-            downloadBtn.style.display = 'block';
-            downloadBtn.scrollIntoView({ behavior: 'smooth' });
         }
 
         // Simulate conversion for other tools
         function simulateConversion() {
-            updateProgress(30, 'Processing file...');
-            
-            setTimeout(() => {
-                updateProgress(60, 'Converting format...');
+            let progress = 10;
+            const interval = setInterval(() => {
+                progress += 5;
                 
-                setTimeout(() => {
-                    updateProgress(90, 'Finalizing output...');
+                if (progress <= 30) {
+                    updateProgress(progress, 'Uploading file...');
+                } else if (progress <= 60) {
+                    updateProgress(progress, 'Processing file...');
+                } else if (progress <= 90) {
+                    updateProgress(progress, 'Converting format...');
+                } else {
+                    updateProgress(100, 'Conversion complete!');
+                    clearInterval(interval);
                     
+                    // Create download button for demo
+                    const downloadBtn = document.getElementById('downloadBtn');
+                    const extensions = {
+                        'pdf-to-word': '.docx',
+                        'word-to-pdf': '.pdf',
+                        'pdf-to-excel': '.xlsx',
+                        'pdf-to-ppt': '.pptx',
+                        'image-to-pdf': '.pdf',
+                        'pdf-to-jpg': '.jpg'
+                    };
+                    
+                    const extension = extensions[currentConverter] || '.pdf';
+                    downloadBtn.href = '#';
+                    downloadBtn.download = selectedFile.name.replace(/\.[^/.]+$/, "") + extension;
+                    downloadBtn.style.display = 'block';
+                    
+                    // Demo mode alert
+                    downloadBtn.onclick = function(e) {
+                        if (currentConverter !== 'pdf-to-word') {
+                            e.preventDefault();
+                            alert('Demo Mode: This tool is in demo mode.\n\nFor PDF to Word: Uses iLovePDF API (already integrated)\n\nFor other tools: You would need to:\n1. Add backend processing\n2. Integrate additional APIs\n3. Or use client-side libraries\n\nTo make it fully functional, consider using:\n- PDF.co API\n- Aspose.Words API\n- Or build your own backend');
+                            return false;
+                        }
+                    };
+                    
+                    // Smooth scroll to download button
                     setTimeout(() => {
-                        updateProgress(100, 'Conversion complete!');
-                        
-                        // Create dummy download
-                        const downloadBtn = document.getElementById('downloadBtn');
-                        const extension = currentConverter === 'word-to-pdf' ? '.pdf' : 
-                                         currentConverter === 'pdf-to-excel' ? '.xlsx' :
-                                         currentConverter === 'pdf-to-ppt' ? '.pptx' :
-                                         currentConverter === 'image-to-pdf' ? '.pdf' : '.jpg';
-                        
-                        downloadBtn.href = '#';
-                        downloadBtn.download = selectedFile.name.replace(/\.[^/.]+$/, "") + extension;
-                        downloadBtn.style.display = 'block';
-                        downloadBtn.scrollIntoView({ behavior: 'smooth' });
-                        
-                        // For demo purposes, show alert
-                        downloadBtn.onclick = function(e) {
-                            if (downloadBtn.href === '#') {
-                                e.preventDefault();
-                                alert('This is a demo. In production, this would download the actual converted file.\n\nFor PDF to Word, the iLovePDF API is already integrated.\n\nFor other tools, you would need to:\n1. Add backend processing\n2. Or integrate additional APIs\n3. Or implement client-side conversion libraries');
-                            }
-                        };
-                    }, 1000);
-                }, 1500);
-            }, 1000);
+                        downloadBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                }
+            }, 200);
         }
 
         // Update progress bar
         function updateProgress(percent, message) {
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('statusText').textContent = message;
+            const progressFill = document.getElementById('progressFill');
+            const statusText = document.getElementById('statusText');
+            
+            if (progressFill) {
+                progressFill.style.width = percent + '%';
+            }
+            
+            if (statusText) {
+                statusText.textContent = message;
+            }
         }
 
         // Reset converter UI
         function resetConverterUI() {
             selectedFile = null;
-            document.getElementById('convertBtn').disabled = true;
-            document.getElementById('progressContainer').style.display = 'none';
-            document.getElementById('downloadBtn').style.display = 'none';
-            document.getElementById('progressFill').style.width = '0%';
+            isProcessing = false;
+            
+            const convertBtn = document.getElementById('convertBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const progressFill = document.getElementById('progressFill');
+            const fileInput = document.getElementById('fileInput');
+            
+            if (convertBtn) convertBtn.disabled = true;
+            if (progressContainer) progressContainer.style.display = 'none';
+            if (downloadBtn) downloadBtn.style.display = 'none';
+            if (progressFill) progressFill.style.width = '0%';
+            if (fileInput) fileInput.value = '';
             
             // Reset upload area
-            document.getElementById('uploadArea').innerHTML = `
-                <div class="upload-icon">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                </div>
-                <div class="upload-text">Click to Upload File</div>
-                <div class="upload-subtext">or drag and drop your file here</div>
-                <div class="upload-subtext">Max file size: 50 MB</div>
-            `;
-            
-            // Reset file input
-            document.getElementById('fileInput').value = '';
+            const uploadArea = document.getElementById('uploadArea');
+            if (uploadArea) {
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">Click to Upload File</div>
+                    <div class="upload-subtext">or drag and drop your file here</div>
+                    <div class="upload-subtext">Max file size: 50 MB</div>
+                `;
+            }
         }
 
         // Initialize drag and drop
         document.addEventListener('DOMContentLoaded', function() {
             const uploadArea = document.getElementById('uploadArea');
             
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.style.borderColor = '#764ba2';
-                uploadArea.style.background = '#e6ebff';
-            });
-            
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.style.borderColor = '#667eea';
-                uploadArea.style.background = '#f8f9ff';
-            });
-            
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.style.borderColor = '#667eea';
-                uploadArea.style.background = '#f8f9ff';
+            if (uploadArea) {
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '#764ba2';
+                    uploadArea.style.background = '#e6ebff';
+                });
                 
-                if (e.dataTransfer.files.length) {
-                    handleFile(e.dataTransfer.files[0]);
-                }
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.style.borderColor = '#667eea';
+                    uploadArea.style.background = '#f8f9ff';
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '#667eea';
+                    uploadArea.style.background = '#f8f9ff';
+                    
+                    if (e.dataTransfer.files.length) {
+                        handleFile(e.dataTransfer.files[0]);
+                    }
+                });
+            }
+            
+            // Add click handlers to all tool cards
+            document.querySelectorAll('.tool-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('tool-btn')) {
+                        const toolType = this.getAttribute('onclick').match(/showConverter\('(.+?)'\)/)[1];
+                        showConverter(toolType);
+                    }
+                });
             });
+            
+            // Add click handlers to tool buttons
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.tool-card');
+                    const toolType = card.getAttribute('onclick').match(/showConverter\('(.+?)'\)/)[1];
+                    showConverter(toolType);
+                });
+            });
+            
+            console.log('JIConverter initialized successfully');
         });
     </script>
 </body>
