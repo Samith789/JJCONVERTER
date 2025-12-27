@@ -6,7 +6,7 @@ class JJConverterAPI {
         // ==============================================
         // 🔑 PASTE YOUR PDF.CO API KEY HERE (REPLACE THE YELLOW TEXT)
         // ==============================================
-        this.pdfcoApiKey = 'javedjabbar691@gmail.com_drSzluoAM1B4wOlAfgUUKLDYdj2QA80xavkzh7JbrcMSKS0HcRUOZ6ghoLYorztT';
+        this.pdfcoApiKey = 'project_public_7c764d4690fbad9efbf0244b1fc331f4_HN2D969bf33196deefe299718c89c1164141c';
         // Example: this.pdfcoApiKey = 'sk_abc123def456ghi789jkl012';
         
         // ==============================================
