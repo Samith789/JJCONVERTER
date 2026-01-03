@@ -8,6 +8,16 @@
     <meta name="keywords" content="free PDF converter, PDF to Word, Word to PDF, compress PDF, edit PDF, merge PDF, split PDF, organize PDF, PDF to Excel, PDF to PowerPoint, online PDF tools, PDF editor, JJConverter">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF-Lib for PDF manipulation -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <!-- jsPDF for PDF generation -->
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <!-- SheetJS for Excel operations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Mammoth.js for DOCX conversion -->
+    <script src="https://unpkg.com/mammoth@1.4.19/mammoth.browser.min.js"></script>
+    <!-- html2canvas for screenshots -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -32,7 +42,7 @@
                     <span>EN</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="mobile-menu-btn">
+                <div class="mobile-menu-btn" onclick="toggleMobileMenu()">
                     <i class="fas fa-bars"></i>
                 </div>
             </div>
@@ -50,9 +60,9 @@
                 <div class="upload-icon">
                     <i class="fas fa-cloud-upload-alt"></i>
                 </div>
-                <p class="upload-text">Drop your file here or <span class="browse-link">browse</span></p>
+                <p class="upload-text">Drop your file here or <span class="browse-link" onclick="document.getElementById('mainFileInput').click()">browse</span></p>
                 <p class="upload-hint">Maximum file size: 50MB</p>
-                <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png" hidden>
+                <input type="file" id="mainFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt" hidden>
             </div>
         </div>
     </section>
@@ -61,25 +71,25 @@
     <section class="tools-nav">
         <div class="container">
             <div class="tools-categories">
-                <button class="tool-category-btn active" data-category="all">
+                <button class="tool-category-btn active" onclick="filterTools('all')">
                     <i class="fas fa-th"></i> All
                 </button>
-                <button class="tool-category-btn" data-category="workflows">
+                <button class="tool-category-btn" onclick="filterTools('workflows')">
                     <i class="fas fa-sitemap"></i> Workflows
                 </button>
-                <button class="tool-category-btn" data-category="organize">
+                <button class="tool-category-btn" onclick="filterTools('organize')">
                     <i class="fas fa-layer-group"></i> Organize PDF
                 </button>
-                <button class="tool-category-btn" data-category="optimize">
+                <button class="tool-category-btn" onclick="filterTools('optimize')">
                     <i class="fas fa-compress-arrows-alt"></i> Optimize PDF
                 </button>
-                <button class="tool-category-btn" data-category="convert">
+                <button class="tool-category-btn" onclick="filterTools('convert')">
                     <i class="fas fa-exchange-alt"></i> Convert PDF
                 </button>
-                <button class="tool-category-btn" data-category="edit">
+                <button class="tool-category-btn" onclick="filterTools('edit')">
                     <i class="fas fa-edit"></i> Edit PDF
                 </button>
-                <button class="tool-category-btn" data-category="security">
+                <button class="tool-category-btn" onclick="filterTools('security')">
                     <i class="fas fa-lock"></i> PDF Security
                 </button>
             </div>
@@ -97,14 +107,19 @@
                     </div>
                     <h3 class="tool-title">PDF to Word</h3>
                     <p class="tool-description">Convert PDF to editable Word documents with perfect layout preservation.</p>
-                    <div class="tool-form" id="pdfToWordForm">
+                    <div class="tool-form">
                         <div class="file-input-container">
-                            <input type="file" id="pdfToWordInput" accept=".pdf" class="tool-file-input">
+                            <input type="file" id="pdfToWordInput" accept=".pdf" class="tool-file-input" onchange="previewFileName(this)">
                             <label for="pdfToWordInput" class="file-input-label">
                                 <i class="fas fa-upload"></i> Select PDF file
                             </label>
                         </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('pdfToWord')">
+                        <div class="tool-options">
+                            <label class="option-checkbox">
+                                <input type="checkbox" id="preserveLayout" checked> Preserve layout
+                            </label>
+                        </div>
+                        <button type="button" class="tool-action-btn" onclick="convertPdfToWord()">
                             <i class="fas fa-sync-alt"></i> Convert to Word
                         </button>
                     </div>
@@ -121,14 +136,14 @@
                     </div>
                     <h3 class="tool-title">Word to PDF</h3>
                     <p class="tool-description">Convert Word documents to PDF with same layouts, tables and fonts.</p>
-                    <div class="tool-form" id="wordToPdfForm">
+                    <div class="tool-form">
                         <div class="file-input-container">
-                            <input type="file" id="wordToPdfInput" accept=".doc,.docx" class="tool-file-input">
+                            <input type="file" id="wordToPdfInput" accept=".doc,.docx,.txt" class="tool-file-input" onchange="previewFileName(this)">
                             <label for="wordToPdfInput" class="file-input-label">
                                 <i class="fas fa-upload"></i> Select Word file
                             </label>
                         </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('wordToPdf')">
+                        <button type="button" class="tool-action-btn" onclick="convertWordToPdf()">
                             <i class="fas fa-sync-alt"></i> Convert to PDF
                         </button>
                     </div>
@@ -145,40 +160,25 @@
                     </div>
                     <h3 class="tool-title">Organize PDF</h3>
                     <p class="tool-description">Reorder, rotate, or delete pages in your PDF document.</p>
-                    <div class="tool-form" id="organizePdfForm">
+                    <div class="tool-form">
                         <div class="file-input-container">
-                            <input type="file" id="organizePdfInput" accept=".pdf" class="tool-file-input">
+                            <input type="file" id="organizePdfInput" accept=".pdf" class="tool-file-input" onchange="previewFileName(this)">
                             <label for="organizePdfInput" class="file-input-label">
                                 <i class="fas fa-upload"></i> Select PDF file
                             </label>
                         </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('organizePdf')">
+                        <div class="tool-options">
+                            <div class="option-group">
+                                <label>Page order:</label>
+                                <input type="text" id="pageOrder" placeholder="e.g., 1,3,5,2,4" class="option-input">
+                            </div>
+                        </div>
+                        <button type="button" class="tool-action-btn" onclick="organizePdfPages()">
                             <i class="fas fa-tasks"></i> Organize Pages
                         </button>
                     </div>
                 </div>
                 <!-- ========== END: ORGANIZE PDF PAGES ========== -->
-
-                <!-- ========== START: REMOVE PDF PAGES ========== -->
-                <div class="tool-card" data-categories="organize">
-                    <div class="tool-icon">
-                        <i class="fas fa-minus-circle"></i>
-                    </div>
-                    <h3 class="tool-title">Remove PDF Pages</h3>
-                    <p class="tool-description">Delete specific pages from your PDF document.</p>
-                    <div class="tool-form" id="removePdfPagesForm">
-                        <div class="file-input-container">
-                            <input type="file" id="removePdfPagesInput" accept=".pdf" class="tool-file-input">
-                            <label for="removePdfPagesInput" class="file-input-label">
-                                <i class="fas fa-upload"></i> Select PDF file
-                            </label>
-                        </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('removePdfPages')">
-                            <i class="fas fa-trash-alt"></i> Remove Pages
-                        </button>
-                    </div>
-                </div>
-                <!-- ========== END: REMOVE PDF PAGES ========== -->
 
                 <!-- ========== START: COMPRESS PDF ========== -->
                 <div class="tool-card" data-categories="optimize">
@@ -187,14 +187,21 @@
                     </div>
                     <h3 class="tool-title">Compress PDF</h3>
                     <p class="tool-description">Reduce PDF file size while maintaining quality.</p>
-                    <div class="tool-form" id="compressPdfForm">
+                    <div class="tool-form">
                         <div class="file-input-container">
-                            <input type="file" id="compressPdfInput" accept=".pdf" class="tool-file-input">
+                            <input type="file" id="compressPdfInput" accept=".pdf" class="tool-file-input" onchange="previewFileName(this)">
                             <label for="compressPdfInput" class="file-input-label">
                                 <i class="fas fa-upload"></i> Select PDF file
                             </label>
                         </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('compressPdf')">
+                        <div class="tool-options">
+                            <label class="option-range">
+                                Compression level:
+                                <input type="range" id="compressionLevel" min="1" max="10" value="5" class="slider">
+                                <span id="compressionValue">Medium</span>
+                            </label>
+                        </div>
+                        <button type="button" class="tool-action-btn" onclick="compressPdf()">
                             <i class="fas fa-file-archive"></i> Compress PDF
                         </button>
                     </div>
@@ -208,14 +215,21 @@
                     </div>
                     <h3 class="tool-title">Rotate PDF</h3>
                     <p class="tool-description">Rotate PDF pages to correct orientation.</p>
-                    <div class="tool-form" id="rotatePdfForm">
+                    <div class="tool-form">
                         <div class="file-input-container">
-                            <input type="file" id="rotatePdfInput" accept=".pdf" class="tool-file-input">
+                            <input type="file" id="rotatePdfInput" accept=".pdf" class="tool-file-input" onchange="previewFileName(this)">
                             <label for="rotatePdfInput" class="file-input-label">
                                 <i class="fas fa-upload"></i> Select PDF file
                             </label>
                         </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('rotatePdf')">
+                        <div class="tool-options">
+                            <select id="rotationAngle" class="option-select">
+                                <option value="90">90° Clockwise</option>
+                                <option value="-90">90° Counter-clockwise</option>
+                                <option value="180">180°</option>
+                            </select>
+                        </div>
+                        <button type="button" class="tool-action-btn" onclick="rotatePdf()">
                             <i class="fas fa-sync"></i> Rotate PDF
                         </button>
                     </div>
@@ -228,15 +242,18 @@
                         <i class="fas fa-edit"></i>
                     </div>
                     <h3 class="tool-title">Edit PDF</h3>
-                    <p class="tool-description">Edit text, images, and pages in your PDF.</p>
-                    <div class="tool-form" id="editPdfForm">
+                    <p class="tool-description">Add text, images, or annotations to your PDF.</p>
+                    <div class="tool-form">
                         <div class="file-input-container">
-                            <input type="file" id="editPdfInput" accept=".pdf" class="tool-file-input">
+                            <input type="file" id="editPdfInput" accept=".pdf" class="tool-file-input" onchange="previewFileName(this)">
                             <label for="editPdfInput" class="file-input-label">
                                 <i class="fas fa-upload"></i> Select PDF file
                             </label>
                         </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('editPdf')">
+                        <div class="tool-options">
+                            <textarea id="editText" placeholder="Enter text to add to PDF..." class="option-textarea"></textarea>
+                        </div>
+                        <button type="button" class="tool-action-btn" onclick="editPdf()">
                             <i class="fas fa-pencil-alt"></i> Edit PDF
                         </button>
                     </div>
@@ -249,62 +266,20 @@
                         <i class="fas fa-file-powerpoint"></i>
                     </div>
                     <h3 class="tool-title">PDF to PowerPoint</h3>
-                    <p class="tool-description">Convert PDF to editable PowerPoint presentation.</p>
-                    <div class="tool-form" id="pdfToPptForm">
+                    <p class="tool-description">Convert PDF slides to PowerPoint presentation.</p>
+                    <div class="tool-form">
                         <div class="file-input-container">
-                            <input type="file" id="pdfToPptInput" accept=".pdf" class="tool-file-input">
+                            <input type="file" id="pdfToPptInput" accept=".pdf" class="tool-file-input" onchange="previewFileName(this)">
                             <label for="pdfToPptInput" class="file-input-label">
                                 <i class="fas fa-upload"></i> Select PDF file
                             </label>
                         </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('pdfToPpt')">
+                        <button type="button" class="tool-action-btn" onclick="convertPdfToPpt()">
                             <i class="fas fa-sync-alt"></i> Convert to PPT
                         </button>
                     </div>
                 </div>
                 <!-- ========== END: PDF TO POWERPOINT ========== -->
-
-                <!-- ========== START: POWERPOINT TO PDF ========== -->
-                <div class="tool-card" data-categories="convert">
-                    <div class="tool-icon">
-                        <i class="fas fa-file-pdf"></i>
-                    </div>
-                    <h3 class="tool-title">PowerPoint to PDF</h3>
-                    <p class="tool-description">Convert PowerPoint presentations to PDF format.</p>
-                    <div class="tool-form" id="pptToPdfForm">
-                        <div class="file-input-container">
-                            <input type="file" id="pptToPdfInput" accept=".ppt,.pptx" class="tool-file-input">
-                            <label for="pptToPdfInput" class="file-input-label">
-                                <i class="fas fa-upload"></i> Select PPT file
-                            </label>
-                        </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('pptToPdf')">
-                            <i class="fas fa-sync-alt"></i> Convert to PDF
-                        </button>
-                    </div>
-                </div>
-                <!-- ========== END: POWERPOINT TO PDF ========== -->
-
-                <!-- ========== START: PDF TO EXCEL ========== -->
-                <div class="tool-card" data-categories="convert">
-                    <div class="tool-icon">
-                        <i class="fas fa-file-excel"></i>
-                    </div>
-                    <h3 class="tool-title">PDF to Excel</h3>
-                    <p class="tool-description">Extract tables from PDF to editable Excel sheets.</p>
-                    <div class="tool-form" id="pdfToExcelForm">
-                        <div class="file-input-container">
-                            <input type="file" id="pdfToExcelInput" accept=".pdf" class="tool-file-input">
-                            <label for="pdfToExcelInput" class="file-input-label">
-                                <i class="fas fa-upload"></i> Select PDF file
-                            </label>
-                        </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('pdfToExcel')">
-                            <i class="fas fa-sync-alt"></i> Convert to Excel
-                        </button>
-                    </div>
-                </div>
-                <!-- ========== END: PDF TO EXCEL ========== -->
 
                 <!-- ========== START: EXCEL TO PDF ========== -->
                 <div class="tool-card" data-categories="convert">
@@ -313,14 +288,14 @@
                     </div>
                     <h3 class="tool-title">Excel to PDF</h3>
                     <p class="tool-description">Convert Excel spreadsheets to PDF documents.</p>
-                    <div class="tool-form" id="excelToPdfForm">
+                    <div class="tool-form">
                         <div class="file-input-container">
-                            <input type="file" id="excelToPdfInput" accept=".xls,.xlsx" class="tool-file-input">
+                            <input type="file" id="excelToPdfInput" accept=".xls,.xlsx,.csv" class="tool-file-input" onchange="previewFileName(this)">
                             <label for="excelToPdfInput" class="file-input-label">
                                 <i class="fas fa-upload"></i> Select Excel file
                             </label>
                         </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('excelToPdf')">
+                        <button type="button" class="tool-action-btn" onclick="convertExcelToPdf()">
                             <i class="fas fa-sync-alt"></i> Convert to PDF
                         </button>
                     </div>
@@ -334,40 +309,93 @@
                     </div>
                     <h3 class="tool-title">Add Page Numbers</h3>
                     <p class="tool-description">Add page numbers to your PDF documents.</p>
-                    <div class="tool-form" id="pageNumbersForm">
+                    <div class="tool-form">
                         <div class="file-input-container">
-                            <input type="file" id="pageNumbersInput" accept=".pdf" class="tool-file-input">
+                            <input type="file" id="pageNumbersInput" accept=".pdf" class="tool-file-input" onchange="previewFileName(this)">
                             <label for="pageNumbersInput" class="file-input-label">
                                 <i class="fas fa-upload"></i> Select PDF file
                             </label>
                         </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('pageNumbers')">
+                        <div class="tool-options">
+                            <select id="pageNumberPosition" class="option-select">
+                                <option value="bottom-center">Bottom Center</option>
+                                <option value="top-right">Top Right</option>
+                                <option value="bottom-right">Bottom Right</option>
+                                <option value="top-left">Top Left</option>
+                            </select>
+                        </div>
+                        <button type="button" class="tool-action-btn" onclick="addPageNumbers()">
                             <i class="fas fa-plus-circle"></i> Add Numbers
                         </button>
                     </div>
                 </div>
                 <!-- ========== END: ADD PAGE NUMBERS ========== -->
 
-                <!-- ========== START: REMOVE WORD PAGES ========== -->
+                <!-- ========== START: MERGE PDF ========== -->
                 <div class="tool-card" data-categories="organize">
                     <div class="tool-icon">
-                        <i class="fas fa-file-word"></i>
+                        <i class="fas fa-object-group"></i>
                     </div>
-                    <h3 class="tool-title">Remove Word Pages</h3>
-                    <p class="tool-description">Delete specific pages from Word documents.</p>
-                    <div class="tool-form" id="removeWordPagesForm">
+                    <h3 class="tool-title">Merge PDF</h3>
+                    <p class="tool-description">Combine multiple PDF files into one document.</p>
+                    <div class="tool-form">
                         <div class="file-input-container">
-                            <input type="file" id="removeWordPagesInput" accept=".doc,.docx" class="tool-file-input">
-                            <label for="removeWordPagesInput" class="file-input-label">
-                                <i class="fas fa-upload"></i> Select Word file
+                            <input type="file" id="mergePdfInput" accept=".pdf" class="tool-file-input" multiple onchange="previewMultipleFiles(this)">
+                            <label for="mergePdfInput" class="file-input-label">
+                                <i class="fas fa-upload"></i> Select PDF files
                             </label>
                         </div>
-                        <button type="button" class="tool-action-btn" onclick="convertFile('removeWordPages')">
-                            <i class="fas fa-trash-alt"></i> Remove Pages
+                        <button type="button" class="tool-action-btn" onclick="mergePdfs()">
+                            <i class="fas fa-layer-group"></i> Merge PDFs
                         </button>
                     </div>
                 </div>
-                <!-- ========== END: REMOVE WORD PAGES ========== -->
+                <!-- ========== END: MERGE PDF ========== -->
+
+                <!-- ========== START: SPLIT PDF ========== -->
+                <div class="tool-card" data-categories="organize">
+                    <div class="tool-icon">
+                        <i class="fas fa-cut"></i>
+                    </div>
+                    <h3 class="tool-title">Split PDF</h3>
+                    <p class="tool-description">Split PDF into multiple documents by pages.</p>
+                    <div class="tool-form">
+                        <div class="file-input-container">
+                            <input type="file" id="splitPdfInput" accept=".pdf" class="tool-file-input" onchange="previewFileName(this)">
+                            <label for="splitPdfInput" class="file-input-label">
+                                <i class="fas fa-upload"></i> Select PDF file
+                            </label>
+                        </div>
+                        <div class="tool-options">
+                            <input type="text" id="splitPages" placeholder="e.g., 1-3,5,7-10" class="option-input">
+                        </div>
+                        <button type="button" class="tool-action-btn" onclick="splitPdf()">
+                            <i class="fas fa-scissors"></i> Split PDF
+                        </button>
+                    </div>
+                </div>
+                <!-- ========== END: SPLIT PDF ========== -->
+
+                <!-- ========== START: PDF TO EXCEL ========== -->
+                <div class="tool-card" data-categories="convert">
+                    <div class="tool-icon">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <h3 class="tool-title">PDF to Excel</h3>
+                    <p class="tool-description">Extract tables from PDF to editable Excel sheets.</p>
+                    <div class="tool-form">
+                        <div class="file-input-container">
+                            <input type="file" id="pdfToExcelInput" accept=".pdf" class="tool-file-input" onchange="previewFileName(this)">
+                            <label for="pdfToExcelInput" class="file-input-label">
+                                <i class="fas fa-upload"></i> Select PDF file
+                            </label>
+                        </div>
+                        <button type="button" class="tool-action-btn" onclick="convertPdfToExcel()">
+                            <i class="fas fa-sync-alt"></i> Convert to Excel
+                        </button>
+                    </div>
+                </div>
+                <!-- ========== END: PDF TO EXCEL ========== -->
             </div>
         </div>
     </section>
@@ -380,8 +408,7 @@
                 <p class="about-description">
                     JJConverter is your ultimate online PDF solution, offering a comprehensive suite of tools to handle all your document needs. 
                     Our platform provides 100% free, secure, and easy-to-use tools for converting, editing, compressing, and organizing PDF files 
-                    and other document formats. With support for all languages and perfect formatting preservation, JJConverter ensures your 
-                    documents maintain their professional appearance across all conversions.
+                    and other document formats. All processing happens in your browser - your files never leave your computer, ensuring complete privacy.
                 </p>
                 
                 <div class="features-grid">
@@ -389,24 +416,8 @@
                         <div class="feature-icon">
                             <i class="fas fa-shield-alt"></i>
                         </div>
-                        <h3 class="feature-title">Secure Processing</h3>
-                        <p class="feature-text">All files are processed securely and automatically deleted after 2 hours to ensure your privacy.</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-globe"></i>
-                        </div>
-                        <h3 class="feature-title">All Languages</h3>
-                        <p class="feature-text">Full support for documents in any language with perfect character and font preservation.</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <h3 class="feature-title">Works Everywhere</h3>
-                        <p class="feature-text">Access JJConverter from any device - desktop, tablet, or mobile - with no installation required.</p>
+                        <h3 class="feature-title">100% Secure</h3>
+                        <p class="feature-text">All processing happens in your browser. Files never leave your computer.</p>
                     </div>
                     
                     <div class="feature-card">
@@ -414,7 +425,23 @@
                             <i class="fas fa-bolt"></i>
                         </div>
                         <h3 class="feature-title">Fast Processing</h3>
-                        <p class="feature-text">Quick document processing with our optimized servers for immediate results.</p>
+                        <p class="feature-text">No server delays. Convert files instantly using your browser's power.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <h3 class="feature-title">All Languages</h3>
+                        <p class="feature-text">Full support for documents in any language with perfect character preservation.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Works Everywhere</h3>
+                        <p class="feature-text">Access JJConverter from any device - desktop, tablet, or mobile.</p>
                     </div>
                 </div>
                 
@@ -422,11 +449,11 @@
                     <h3 class="section-subtitle">Why Choose JJConverter?</h3>
                     <ul class="benefits-list">
                         <li><i class="fas fa-check-circle"></i> <strong>100% Free:</strong> No hidden charges, no watermarks, no registration required</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Perfect Formatting:</strong> Preserves all layouts, tables, fonts, and styles exactly</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Privacy First:</strong> Your files never leave your computer</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>No Limits:</strong> Unlimited conversions, no file size restrictions</li>
                         <li><i class="fas fa-check-circle"></i> <strong>All-in-One Solution:</strong> More than 20 tools for all your PDF needs</li>
                         <li><i class="fas fa-check-circle"></i> <strong>Multi-Language Support:</strong> Handles documents in any language flawlessly</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Batch Processing:</strong> Convert multiple files at once to save time</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Cloud Integration:</strong> Direct import from Google Drive and Dropbox</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Offline Capable:</strong> Works without internet connection after first load</li>
                     </ul>
                 </div>
             </div>
@@ -447,11 +474,10 @@
                     <div class="footer-column">
                         <h4 class="footer-title">Tools</h4>
                         <ul class="footer-list">
-                            <li><a href="#">All PDF Tools</a></li>
-                            <li><a href="#">Convert PDF</a></li>
-                            <li><a href="#">Edit PDF</a></li>
-                            <li><a href="#">Compress PDF</a></li>
-                            <li><a href="#">Merge PDF</a></li>
+                            <li><a href="#" onclick="filterTools('all')">All PDF Tools</a></li>
+                            <li><a href="#" onclick="filterTools('convert')">Convert PDF</a></li>
+                            <li><a href="#" onclick="filterTools('edit')">Edit PDF</a></li>
+                            <li><a href="#" onclick="filterTools('organize')">Organize PDF</a></li>
                         </ul>
                     </div>
                     
@@ -459,26 +485,24 @@
                         <h4 class="footer-title">Company</h4>
                         <ul class="footer-list">
                             <li><a href="#about">About JJConverter</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Terms of Service</a></li>
-                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#" onclick="showPrivacyPolicy()">Privacy Policy</a></li>
+                            <li><a href="#" onclick="showTerms()">Terms of Service</a></li>
                         </ul>
                     </div>
                     
                     <div class="footer-column">
                         <h4 class="footer-title">Support</h4>
                         <ul class="footer-list">
-                            <li><a href="#">Help Center</a></li>
-                            <li><a href="#">FAQ</a></li>
-                            <li><a href="#">Tutorials</a></li>
-                            <li><a href="#">API Documentation</a></li>
+                            <li><a href="#" onclick="showHelp()">Help Center</a></li>
+                            <li><a href="#" onclick="showFAQ()">FAQ</a></li>
+                            <li><a href="#" onclick="showTutorials()">Tutorials</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p class="copyright">© 2023 JJConverter. All rights reserved. The free online PDF toolkit for everyone.</p>
+                <p class="copyright">© <span id="currentYear"></span> JJConverter. All rights reserved. The free online PDF toolkit for everyone.</p>
                 <p class="seo-text">
                     <strong>SEO Keywords:</strong> free online PDF converter, edit PDF, compress PDF, merge PDF, split PDF, convert Word to PDF, 
                     convert PDF to Word, organize PDF pages, PDF to PowerPoint, PowerPoint to PDF, PDF to Excel, Excel to PDF, 
@@ -499,8 +523,8 @@
                 <div class="download-info">
                     <i class="fas fa-file-download download-icon"></i>
                     <p class="download-text">Your converted file is ready to download</p>
-                    <p class="file-name" id="convertedFileName">converted_file.docx</p>
-                    <p class="file-size">File size: 2.4 MB</p>
+                    <p class="file-name" id="convertedFileName">converted_file.pdf</p>
+                    <p class="file-size">File size: <span id="convertedFileSize">0 KB</span></p>
                 </div>
                 <div class="download-actions">
                     <button class="download-btn" id="downloadBtn">
@@ -520,6 +544,49 @@
         <p class="progress-text" id="progressText">Processing your file...</p>
     </div>
 
+    <!-- Custom Alert Modal -->
+    <div class="modal" id="alertModal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="alertTitle">Alert</h3>
+                <button class="modal-close" onclick="closeAlertModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="alertMessage"></p>
+                <div class="modal-actions">
+                    <button class="download-btn" onclick="closeAlertModal()">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Organizer Modal -->
+    <div class="modal" id="pageOrganizerModal">
+        <div class="modal-content wide-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Organize PDF Pages</h3>
+                <button class="modal-close" onclick="closePageOrganizer()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="page-thumbnails" id="pageThumbnails">
+                    <!-- Page thumbnails will be generated here -->
+                </div>
+                <div class="organizer-actions">
+                    <button class="secondary-btn" onclick="rotateSelectedPages()">
+                        <i class="fas fa-redo"></i> Rotate Selected
+                    </button>
+                    <button class="secondary-btn" onclick="deleteSelectedPages()">
+                        <i class="fas fa-trash"></i> Delete Selected
+                    </button>
+                    <button class="download-btn" onclick="applyPageChanges()">
+                        <i class="fas fa-check"></i> Apply Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
+    <script src="tools.js"></script>
 </body>
 </html>
