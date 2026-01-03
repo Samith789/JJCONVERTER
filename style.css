@@ -266,6 +266,7 @@ body {
     cursor: pointer;
     transition: all 0.3s;
     text-align: center;
+    min-height: 50px;
 }
 
 .file-input-label:hover {
@@ -273,6 +274,92 @@ body {
     border-color: #ff4757;
 }
 
+/* Tool Options */
+.tool-options {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #ff4757;
+}
+
+.option-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+}
+
+.option-checkbox input {
+    width: 16px;
+    height: 16px;
+}
+
+.option-group {
+    margin-bottom: 10px;
+}
+
+.option-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+}
+
+.option-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.option-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+}
+
+.option-textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    min-height: 80px;
+    resize: vertical;
+}
+
+.option-range {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.slider {
+    width: 100%;
+    height: 6px;
+    background: #ddd;
+    outline: none;
+    border-radius: 3px;
+    -webkit-appearance: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #ff4757;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Tool Action Button */
 .tool-action-btn {
     width: 100%;
     padding: 14px;
@@ -288,11 +375,19 @@ body {
     justify-content: center;
     gap: 8px;
     transition: all 0.3s;
+    margin-top: 10px;
 }
 
 .tool-action-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+}
+
+.tool-action-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 .tool-info {
@@ -454,6 +549,7 @@ body {
     text-decoration: none;
     transition: color 0.3s;
     font-size: 14px;
+    cursor: pointer;
 }
 
 .footer-list a:hover {
@@ -501,6 +597,14 @@ body {
     animation: modalSlideIn 0.3s ease;
 }
 
+.wide-modal {
+    max-width: 800px;
+}
+
+.small-modal {
+    max-width: 400px;
+}
+
 @keyframes modalSlideIn {
     from {
         transform: translateY(-50px);
@@ -539,6 +643,56 @@ body {
     padding: 30px;
 }
 
+/* Page Thumbnails in Organizer */
+.page-thumbnails {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.page-thumbnail {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: move;
+    transition: all 0.3s;
+    background: white;
+}
+
+.page-thumbnail:hover {
+    border-color: #ff4757;
+    transform: translateY(-2px);
+}
+
+.page-thumbnail.selected {
+    border-color: #ff4757;
+    background-color: #fff5f5;
+}
+
+.page-number {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.page-checkbox {
+    margin-top: 5px;
+}
+
+/* Organizer Actions */
+.organizer-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Download Info */
 .download-info {
     text-align: center;
     margin-bottom: 30px;
@@ -561,6 +715,7 @@ body {
     color: #666;
     margin-bottom: 5px;
     font-weight: 500;
+    word-break: break-all;
 }
 
 .file-size {
@@ -568,6 +723,7 @@ body {
     color: #888;
 }
 
+/* Download Actions */
 .download-actions {
     display: flex;
     flex-direction: column;
@@ -677,6 +833,18 @@ body {
 @media (max-width: 768px) {
     .nav-menu {
         display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: white;
+        flex-direction: column;
+        padding: 20px;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+    
+    .nav-menu.show {
+        display: flex;
     }
     
     .mobile-menu-btn {
@@ -723,6 +891,10 @@ body {
     .footer-links {
         grid-template-columns: 1fr;
         gap: 30px;
+    }
+    
+    .organizer-actions {
+        flex-direction: column;
     }
 }
 
